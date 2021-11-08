@@ -11,7 +11,9 @@ export const GithubContext = createContext({
 const GithubProvider = ({children}) => {
     const [githubState, setGithubState] = useState({
         loading:false,
+        hasUse:false,
         user:{
+            id: undefined,
             avatar: undefined,
             login: undefined,
             name: undefined,
@@ -25,22 +27,23 @@ const GithubProvider = ({children}) => {
             public_repos:0,
         },
         repositories:[],
-        starrd:[],
+        starred:[],
     });
 
     const getUser = ( username ) => {
-        api.get(`users/${ username }`)
-        .then( ({ data }) => {
-            setGithubState(prevState => ({
-                ...prevState,
-                loading: !prevState.loading,
-                })
-            )
+        setGithubState((prevState) => ({
+            ...prevState,
+            loading: !prevState.loading,
+        }));
 
+        api
+        .get(`users/${ username }`)
+        .then( ({ data }) => {
             setGithubState(prevState => ({
                 ...prevState,
                 hasUser:true,
                 user:{
+                    id:data.id,
                     avatar:data.avatar_url,
                     login: data.login,
                     name: data.name,
@@ -61,18 +64,45 @@ const GithubProvider = ({children}) => {
                 loading: !prevState.loading,
             }));
         })
+        
     };
-
+    const getUserRepos = (username) => {  
+        api.get(`users/${username}/repos`).then(({ data }) => {
+            console.log("data: " + JSON.stringify(data));
+            setGithubState((prevState) => ({
+                ...prevState,
+                repositories:data,
+            })
+            )
+        }) 
+    };
+   
+    const getUserStarred = (username) => {
+        api.get(`users/${ username }/starred`)
+        .then( ({ data }) => {
+            setGithubState((prevState) => ({
+                ...prevState,
+                starred: data,         
+                })
+            )
+        }) 
+       
+    };
+    
+    
     const contextValue = {
         githubState,
         getUser: useCallback((username) => getUser(username), []),
+        getUserRepos: useCallback((username) => getUserRepos(username), []),
+        getUserStarred: useCallback((username) => getUserStarred(username), []),
     };
-
+        
     return (
         <GithubContext.Provider value={contextValue}>
             {children}
         </GithubContext.Provider>
     )
 }
+
 
 export default GithubProvider;

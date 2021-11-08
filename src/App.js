@@ -1,5 +1,6 @@
 import React from "react";
 import Layout from "./components/layout";
+import NoSearch from "./components/no-search";
 import Profile from "./components/Profile";
 import Repositiories from "./components/repositories";
 import useGithub from "./hooks/github-hooks";
@@ -19,9 +20,7 @@ const App = () => {
           </div>
         )}
       </div>) : (
-      <div>
-        Nenhum usúario pesquisado
-      </div>
+      <NoSearch />
       )}
       
     </Layout>
