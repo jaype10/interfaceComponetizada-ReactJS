@@ -14,7 +14,7 @@ export const WrapperStatusCount = styled.div`
   }
 `;
 
-export const WrapperUsername = styled.div`
+export const WrapperUserGeneric = styled.div`
   display: flex;
   align-itens: center;
   margin-top: 8px;
